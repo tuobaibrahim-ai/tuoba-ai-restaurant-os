@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>TUOBA Ultimate All-in-One Multilingual Enterprise</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <h1 id="app-title">TUOBA Ultimate All-in-One Multilingual Enterprise</h1>
+        <p id="app-subtitle">تشغيل + POS + مالية + HR + كول سنتر + أمان + جودة + مدفوعات</p>
+      </div>
+      <div class="toolbar">
+        <select id="brand-select" class="select compact"></select>
+        <select id="branch-select" class="select compact"></select>
+      </div>
+      <div class="toolbar">
+        <select id="lang-select" class="select compact"></select>
+        <button class="btn soft" onclick="exportData()" id="export-btn">تصدير</button>
+      </div>
+      <div class="toolbar">
+        <button class="btn soft" onclick="simulateBiometric()" id="passkey-btn">Passkey</button>
+        <button class="btn soft" onclick="getCurrentLocation()" id="location-btn">الموقع</button>
+      </div>
+    </header>
+
+    <main id="content" class="content"></main>
+
+    <nav class="bottom-nav">
+      <button data-tab="overview" class="nav-btn active"></button>
+      <button data-tab="pos" class="nav-btn"></button>
+      <button data-tab="orders" class="nav-btn"></button>
+      <button data-tab="kds" class="nav-btn"></button>
+      <button data-tab="pickup" class="nav-btn"></button>
+      <button data-tab="apps" class="nav-btn"></button>
+      <button data-tab="printing" class="nav-btn"></button>
+      <button data-tab="expenses" class="nav-btn"></button>
+      <button data-tab="recipe" class="nav-btn"></button>
+      <button data-tab="geidea" class="nav-btn"></button>
+      <button data-tab="finance" class="nav-btn"></button>
+      <button data-tab="callcenter" class="nav-btn"></button>
+      <button data-tab="crm" class="nav-btn"></button>
+      <button data-tab="attendance" class="nav-btn"></button>
+      <button data-tab="payments" class="nav-btn"></button>
+      <button data-tab="security" class="nav-btn"></button>
+      <button data-tab="reports" class="nav-btn"></button>
+    </nav>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
