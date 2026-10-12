@@ -6,6 +6,8 @@
 const I18N = {
   ar: {
     dir: 'rtl',
+    brand: 'البراند', branch: 'الفرع', more: 'المزيد',
+    noSales: 'لا مبيعات مسجلة بعد — سجّل أول عملية لعرض الربح',
     appTitle: 'TUOBA — نظام تشغيل المطاعم المتكامل',
     appSubtitle: 'تشغيل + POS + مالية + HR + كول سنتر + أمان + جودة + مدفوعات',
     export: 'تصدير', passkey: 'Passkey', location: 'الموقع', resetData: 'مسح البيانات',
@@ -55,6 +57,8 @@ const I18N = {
 
   en: {
     dir: 'ltr',
+    brand: 'Brand', branch: 'Branch', more: 'More',
+    noSales: 'No sales recorded yet — record the first transaction to see profit',
     appTitle: 'TUOBA — All-in-One Restaurant OS',
     appSubtitle: 'Operations + POS + Finance + HR + Call Center + Security + Quality + Payments',
     export: 'Export', passkey: 'Passkey', location: 'Location', resetData: 'Reset data',
@@ -104,6 +108,8 @@ const I18N = {
 
   fr: {
     dir: 'ltr',
+    brand: 'Marque', branch: 'Succursale', more: 'Plus',
+    noSales: 'Aucune vente enregistrée — enregistrez la première transaction pour voir le profit',
     appTitle: 'TUOBA — Système de gestion restaurant tout-en-un',
     appSubtitle: 'Opérations + POS + Finance + RH + Centre d’appels + Sécurité + Qualité + Paiements',
     export: 'Exporter', passkey: 'Passkey', location: 'Localisation', resetData: 'Réinitialiser',
@@ -153,6 +159,8 @@ const I18N = {
 
   es: {
     dir: 'ltr',
+    brand: 'Marca', branch: 'Sucursal', more: 'Más',
+    noSales: 'Sin ventas registradas — registra la primera transacción para ver el beneficio',
     appTitle: 'TUOBA — Sistema operativo de restaurante todo en uno',
     appSubtitle: 'Operaciones + POS + Finanzas + RRHH + Call Center + Seguridad + Calidad + Pagos',
     export: 'Exportar', passkey: 'Passkey', location: 'Ubicación', resetData: 'Borrar datos',
@@ -202,6 +210,8 @@ const I18N = {
 
   tr: {
     dir: 'ltr',
+    brand: 'Marka', branch: 'Şube', more: 'Daha fazla',
+    noSales: 'Henüz satış kaydı yok — kârı görmek için ilk işlemi kaydedin',
     appTitle: 'TUOBA — Tümü Bir Arada Restoran Yönetim Sistemi',
     appSubtitle: 'Operasyon + POS + Finans + İK + Çağrı Merkezi + Güvenlik + Kalite + Ödeme',
     export: 'Dışa aktar', passkey: 'Passkey', location: 'Konum', resetData: 'Verileri sıfırla',

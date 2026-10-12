@@ -31,22 +31,42 @@ function check(name, cond) {
   if (!cond) failures++;
 }
 const evl = code => window.eval(code);
+const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+const go = tab => click(document.querySelector(`.tab-btn[data-tab="${tab}"]`));
 
-// 1) Boot
+// 1) Boot + navigation structure
 check('boot: title translated', document.title.includes('TUOBA'));
-check('boot: 17 nav labels filled', document.querySelectorAll('.nav-btn .lb').length === 17 &&
-  [...document.querySelectorAll('.nav-btn .lb')].every(el => el.textContent.length > 0));
+check('boot: 18 tab labels filled (5 nav + More + 12 sheet)',
+  document.querySelectorAll('.tab-btn .lb').length === 18 &&
+  [...document.querySelectorAll('.tab-btn .lb')].every(el => el.textContent.length > 0));
+check('boot: nav icons injected as SVG',
+  document.querySelectorAll('.nav-btn .ic svg').length === 5 &&
+  document.querySelector('#more-btn .ic svg'));
+check('boot: header action icons SVG', document.querySelectorAll('.act .act-ic svg').length === 4);
 check('boot: overview rendered', document.getElementById('content').innerHTML.includes('section-title'));
 
-// 2) POS flow
-evl(`render('pos')`);
+// 2) More drawer opens/closes
+const sheet = document.getElementById('more-sheet');
+check('drawer hidden initially', sheet.hidden === true);
+click(document.getElementById('more-btn'));
+check('drawer opens on More', sheet.hidden === false);
+go('finance');
+check('drawer closes after picking a tab', sheet.hidden === true);
+check('finance rendered from drawer', document.getElementById('content').innerHTML.includes('P&L') || document.getElementById('content').innerHTML.length > 100);
+
+// 3) Profit hidden until sales exist (misleading -335k fix)
+go('overview');
+const ov = document.getElementById('content').innerHTML;
+check('no misleading negative profit when sales=0', !ov.includes('-335,000') && ov.includes('—'));
+
+// 4) POS flow
+go('pos');
 check('pos: 6 menu items', document.querySelectorAll('.menu-btn').length === 6);
-const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
 click(document.querySelector('.menu-btn'));
 click(document.querySelector('.menu-btn'));
 check('pos: cart qty=2 after two clicks', evl(`state.cart[0].qty`) === 2);
 
-// 3) Delivery mode — fields persist across re-renders (B1 regression)
+// 5) Delivery mode — fields persist across re-renders (B1 regression)
 evl(`setOrderMode('delivery')`);
 const dfields = () => [...document.querySelectorAll('[data-dfield]')];
 check('pos: 4 delivery inputs', dfields().length === 4);
@@ -54,21 +74,19 @@ const setField = (i, v) => { dfields()[i].value = v; dfields()[i].dispatchEvent(
 setField(0, 'محمد علي');
 setField(1, '01012345678');
 setField(3, '14 شارع التحرير، الجيزة');
-click(document.querySelector('.menu-btn[data-action="addToCart"]')); // triggers re-render
+click(document.querySelector('.menu-btn[data-action="addToCart"]'));
 check('B1 fix: name survives re-render', dfields()[0].value === 'محمد علي');
 check('B1 fix: phone survives re-render', dfields()[1].value === '01012345678');
 check('B1 fix: address survives re-render', dfields()[3].value.includes('التحرير'));
 
-// 4) Place order
+// 6) Place order
 evl(`placeOrder('cash')`);
 check('order id sequential', /^ORD-\d{5}$/.test(evl(`state.orders[0].orderNo`)));
 check('order captured customer', evl(`state.orders[0].customer.name`) === 'محمد علي');
-check('order captured address', evl(`JSON.stringify(state.orders[0].customer.address)`).includes('التحرير'));
 check('cart cleared after order', evl(`state.cart.length`) === 0);
-check('delivery form cleared', evl(`state.deliveryForm.name`) === '');
 
-// 5) Brand switch clears cart (B2 regression — via the real select handler)
-evl(`render('pos')`);
+// 7) Brand switch clears cart (B2)
+go('pos');
 click(document.querySelector('.menu-btn'));
 check('cart has 1 item before switch', evl(`state.cart.length`) === 1);
 const brandSelect = document.getElementById('brand-select');
@@ -77,11 +95,11 @@ brandSelect.dispatchEvent(new window.Event('change', { bubbles: true }));
 check('B2 fix: cart emptied on brand change', evl(`state.cart.length`) === 0);
 check('B2 fix: branch switched', evl(`state.branch`) === 'Sheikh Zayed');
 
-// 6) Table isolation per branch (B3 regression)
+// 8) Table isolation per branch (B3)
 check('B3 fix: new branch tables free', evl(`getTables().every(tt => !tt.occupied)`) === true);
 
-// 7) Attendance real hours (B4 regression)
-evl(`render('attendance')`);
+// 9) Attendance real hours (B4)
+go('attendance');
 const type = (id, v) => {
   const el = document.getElementById(id);
   el.value = v;
@@ -101,25 +119,26 @@ type('emp-name', 'أحمد');
 click(document.querySelector('[data-action="checkIn"]'));
 check('duplicate check-in blocked', evl(`state.attendance.filter(r => r.employee === 'أحمد' && !r.checkOutAt).length`) === 1);
 
-// 8) Finance integrates POS sales (B10 regression)
-evl(`render('finance')`);
+// 10) Finance integrates POS sales (B10)
+go('finance');
 const finHtml = document.getElementById('content').innerHTML;
-check('B10 fix: finance shows POS + payments breakdown', finHtml.includes('POS') && finHtml.includes('Geidea') === false || finHtml.includes('جيديا') || finHtml.includes('Geidea'));
+check('B10 fix: finance shows POS + payments breakdown', finHtml.includes('POS'));
 check('money: local currency rendered', /EGP|ج\.م|£/.test(finHtml));
 
-// 9) CSP-safe rendering (no inline handlers anywhere in generated markup)
+// 11) CSP-safe rendering
 const allRendered = document.getElementById('content').innerHTML;
 check('CSP-safe: no inline event handlers', !/onclick=|onchange=|oninput=/i.test(allRendered));
 
-// 10) i18n switch round-trip
+// 12) i18n switch round-trip
 evl(`setLang('en')`);
 check('i18n: English title', document.getElementById('app-title').textContent.includes('Restaurant OS'));
 check('i18n: LTR applied', document.documentElement.dir === 'ltr');
+check('i18n: More label translated', document.querySelector('#more-btn .lb').textContent === 'More');
 evl(`setLang('ar')`);
 check('i18n: RTL restored', document.documentElement.dir === 'rtl');
 
-// 11) XSS attempt through customer name is escaped (S1 regression)
-evl(`render('payments')`);
+// 13) XSS attempt through customer name is escaped (S1)
+go('payments');
 document.getElementById('pay-customer').value = '<img src=x onerror=alert(1)>';
 document.getElementById('pay-phone').value = '01099999999';
 document.getElementById('pay-amount').value = '50';

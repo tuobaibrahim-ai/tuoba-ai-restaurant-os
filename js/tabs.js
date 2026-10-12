@@ -48,7 +48,7 @@ function aiBrief() {
   if (openOrders) notes.push(`${openOrders} ${t('orders')}`);
   if (openCalls) notes.push(`${openCalls} ${t('callCenter')}`);
   if (p.sales > 0) notes.push(`${t('profit')}: ${fmtMoney(p.profit)}`);
-  if (!notes.length) notes.push(t('activeSituation'));
+  else notes.push(t('noSales'));
   return notes;
 }
 
@@ -71,7 +71,7 @@ function renderOverview() {
       ${kpi(t('payments'), payments.length, 'Pay')}
       ${kpi(t('crm'), scoped(state.customers).length, 'CRM')}
       ${kpi(t('sales'), fmtMoney(p.sales), t('finance'))}
-      ${kpi(t('profit'), fmtMoney(p.profit), 'P&L')}
+      ${p.sales > 0 ? kpi(t('profit'), fmtMoney(p.profit), 'P&L') : kpi(t('profit'), '—', t('noSales'))}
     </div>
     <div class="card">
       <div class="section-title">${t('aiBrief')}</div>
@@ -494,6 +494,8 @@ function runImport() {
 function renderFinance() {
   const p = branchFigures(state.brand, state.branch);
   const b = brandFigures(state.brand);
+  const hasSales = p.sales > 0;
+  const bHasSales = b.sales > 0;
   content.innerHTML = `
     <div class="card"><div class="section-title">${t('branchPL')} — ${esc(state.branch)}</div>
       <div class="section-title">${t('orderBreakdown')}</div><div class="list">
@@ -511,20 +513,21 @@ function renderFinance() {
       <div class="list">
         <div class="list-item">${t('sales')}: <strong class="money">${fmtMoney(p.sales)}</strong></div>
         <div class="list-item">${t('totalCost')}: <span class="money">${fmtMoney(p.costs)}</span></div>
-        <div class="list-item"><strong>${t('profit')}: <span class="money">${fmtMoney(p.profit)}</span></strong></div>
-        <div class="list-item"><strong>${t('margin')}: ${p.margin}%</strong></div>
+        <div class="list-item"><strong>${t('profit')}: <span class="money">${hasSales ? fmtMoney(p.profit) : '—'}</span></strong></div>
+        <div class="list-item"><strong>${t('margin')}: ${hasSales ? p.margin + '%' : '—'}</strong></div>
       </div>
+      ${hasSales ? '' : `<div class="note">${t('noSales')}</div>`}
     </div>
     <div class="card"><div class="section-title">${t('brandPL')} — ${esc(state.brand)}</div><div class="list">
       <div class="list-item">${t('sales')}: <span class="money">${fmtMoney(b.sales)}</span></div>
       <div class="list-item">${t('totalCost')}: <span class="money">${fmtMoney(b.costs)}</span></div>
-      <div class="list-item"><strong>${t('profit')}: <span class="money">${fmtMoney(b.profit)}</span></strong></div>
-      <div class="list-item"><strong>${t('margin')}: ${b.margin}%</strong></div>
+      <div class="list-item"><strong>${t('profit')}: <span class="money">${bHasSales ? fmtMoney(b.profit) : '—'}</span></strong></div>
+      <div class="list-item"><strong>${t('margin')}: ${bHasSales ? b.margin + '%' : '—'}</strong></div>
     </div></div>
     <div class="card"><div class="section-title">${t('cashFlow')}</div><div class="list">
       <div class="list-item">${t('cashIn')}: <span class="money">${fmtMoney(p.sales)}</span></div>
       <div class="list-item">${t('cashOut')}: <span class="money">${fmtMoney(p.costs)}</span></div>
-      <div class="list-item"><strong>${t('balance')}: <span class="money">${fmtMoney(p.sales - p.costs)}</span></strong></div>
+      <div class="list-item"><strong>${t('balance')}: <span class="money">${hasSales ? fmtMoney(p.sales - p.costs) : '—'}</span></strong></div>
     </div>
     <div class="note">${t('financeNote')}</div></div>`;
 }
@@ -765,7 +768,7 @@ function renderReports() {
       ${kpi(t('orders'), orders.length, 'POS')}
       ${kpi(t('callcenter'), calls.length, 'CC')}
       ${kpi(t('payments'), payments.length, 'Pay')}
-      ${kpi(t('brandMargin'), b.margin + '%', t('brand'))}
+      ${kpi(t('brandMargin'), b.sales > 0 ? b.margin + '%' : '—', b.sales > 0 ? t('brand') : t('noSales'))}
     </div>
     <div class="card"><div class="section-title">${t('orders')}</div><div class="list-item small">${esc(byStatus)}</div></div>
     <div class="card"><div class="section-title">${t('aiBrief')}</div><div class="list">${aiBrief().map(n => `<div class="list-item">${esc(n)}</div>`).join('')}</div></div>`;
@@ -780,7 +783,9 @@ let currentTab = 'overview';
 let tickHandle = null;
 
 function setActive(tab) {
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  const moreBtn = document.getElementById('more-btn');
+  if (moreBtn) moreBtn.classList.toggle('active', SHEET_TABS.includes(tab));
 }
 
 function render(tab) {

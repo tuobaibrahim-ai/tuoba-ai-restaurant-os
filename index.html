@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="description" content="TUOBA — نظام تشغيل مطاعم متكامل: POS، KDS، مالية، HR، كول سنتر، مدفوعات — بواجهة عربية وأربعة لغات إضافية." />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'" />
@@ -16,49 +16,67 @@
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <div>
-        <h1 id="app-title">TUOBA Restaurant OS</h1>
-        <p id="app-subtitle"></p>
+      <div class="tb-head">
+        <img class="app-logo" src="icons/icon-192.png" alt="" />
+        <div class="tb-title">
+          <h1 id="app-title">TUOBA Restaurant OS</h1>
+          <p id="app-subtitle"></p>
+        </div>
+        <select id="lang-select" class="select compact lang-select" aria-label="Language / اللغة"></select>
       </div>
-      <div class="toolbar">
-        <select id="brand-select" class="select compact"></select>
-        <select id="branch-select" class="select compact"></select>
+      <div class="tb-context">
+        <label class="field">
+          <span class="field-lb" id="brand-lb">البراند</span>
+          <select id="brand-select" class="select compact"></select>
+        </label>
+        <label class="field">
+          <span class="field-lb" id="branch-lb">الفرع</span>
+          <select id="branch-select" class="select compact"></select>
+        </label>
       </div>
-      <div class="toolbar">
-        <select id="lang-select" class="select compact"></select>
-        <button class="btn soft" id="export-btn">تصدير</button>
-      </div>
-      <div class="toolbar">
-        <button class="btn soft" id="passkey-btn">Passkey</button>
-        <button class="btn soft" id="location-btn">الموقع</button>
-      </div>
-      <div class="toolbar single">
-        <button class="btn mini danger-ghost" id="reset-btn">مسح البيانات</button>
+      <div class="tb-actions">
+        <button class="act" id="export-btn"><span class="act-ic"></span><span class="act-lb"></span></button>
+        <button class="act" id="passkey-btn"><span class="act-ic"></span><span class="act-lb"></span></button>
+        <button class="act" id="location-btn"><span class="act-ic"></span><span class="act-lb"></span></button>
+        <button class="act danger-ghost" id="reset-btn"><span class="act-ic"></span><span class="act-lb"></span></button>
       </div>
     </header>
 
     <main id="content" class="content"></main>
 
     <nav class="bottom-nav" aria-label="main navigation">
-      <button data-tab="overview" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="pos" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="orders" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="kds" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="pickup" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="apps" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="printing" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="expenses" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="recipe" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="geidea" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="finance" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="callcenter" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="crm" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="attendance" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="payments" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="security" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
-      <button data-tab="reports" class="nav-btn"><span class="ic"></span><span class="lb"></span></button>
+      <button class="tab-btn nav-btn" data-tab="overview"><span class="ic"></span><span class="lb"></span></button>
+      <button class="tab-btn nav-btn" data-tab="pos"><span class="ic"></span><span class="lb"></span></button>
+      <button class="tab-btn nav-btn" data-tab="orders"><span class="ic"></span><span class="lb"></span></button>
+      <button class="tab-btn nav-btn" data-tab="kds"><span class="ic"></span><span class="lb"></span></button>
+      <button class="tab-btn nav-btn" data-tab="pickup"><span class="ic"></span><span class="lb"></span></button>
+      <button class="tab-btn" id="more-btn"><span class="ic"></span><span class="lb"></span></button>
     </nav>
   </div>
+
+  <div class="sheet" id="more-sheet" hidden>
+    <div class="sheet-card" role="dialog" aria-modal="true">
+      <div class="sheet-head">
+        <div class="section-title" id="sheet-title">المزيد</div>
+        <button class="btn soft mini" id="sheet-close" aria-label="إغلاق">✕</button>
+      </div>
+      <div class="sheet-grid">
+        <button class="tab-btn sheet-btn" data-tab="apps"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="printing"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="expenses"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="recipe"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="geidea"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="finance"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="callcenter"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="crm"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="attendance"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="payments"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="security"><span class="ic"></span><span class="lb"></span></button>
+        <button class="tab-btn sheet-btn" data-tab="reports"><span class="ic"></span><span class="lb"></span></button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/i18n.js"></script>
   <script src="js/state.js"></script>
   <script src="js/ui.js"></script>

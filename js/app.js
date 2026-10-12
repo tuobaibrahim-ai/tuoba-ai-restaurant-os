@@ -101,10 +101,30 @@ function wireHeader() {
   $('reset-btn').addEventListener('click', function () { armReset(this); });
 }
 
+// Bottom-nav "More" drawer
+function openSheet() {
+  const s = document.getElementById('more-sheet');
+  if (s) { s.hidden = false; document.body.classList.add('sheet-open'); }
+}
+function closeSheet() {
+  const s = document.getElementById('more-sheet');
+  if (s) { s.hidden = true; document.body.classList.remove('sheet-open'); }
+}
+
 function wireNav() {
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => render(btn.dataset.tab));
+  document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => { closeSheet(); render(btn.dataset.tab); });
   });
+  const moreBtn = document.getElementById('more-btn');
+  if (moreBtn) moreBtn.addEventListener('click', () => {
+    const s = document.getElementById('more-sheet');
+    if (s && s.hidden) openSheet(); else closeSheet();
+  });
+  const closeBtn = document.getElementById('sheet-close');
+  if (closeBtn) closeBtn.addEventListener('click', closeSheet);
+  const sheet = document.getElementById('more-sheet');
+  if (sheet) sheet.addEventListener('click', e => { if (e.target === sheet) closeSheet(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 }
 
 function boot() {
