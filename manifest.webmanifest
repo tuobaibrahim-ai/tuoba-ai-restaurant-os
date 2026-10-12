@@ -1,11 +1,23 @@
 {
-  "name": "TUOBA Ultimate All-in-One Multilingual Enterprise",
-  "short_name": "TUOBA Ultimate i18n",
+  "name": "TUOBA Restaurant OS",
+  "short_name": "TUOBA OS",
+  "id": "tuoba-restaurant-os",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#0f172a",
   "lang": "ar",
   "dir": "rtl",
-  "icons": []
+  "description": "نظام تشغيل مطاعم متكامل: POS، KDS، مالية، HR، كول سنتر، مدفوعات — متعدد اللغات",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "POS", "url": "./index.html#pos" },
+    { "name": "KDS", "url": "./index.html#kds" },
+    { "name": "Finance", "url": "./index.html#finance" }
+  ]
 }

@@ -1,0 +1,23 @@
+# قالب GitHub Actions CI — لتفعيله انسخ هذا الملف إلى:
+#   .github/workflows/ci.yml
+# (إنشاء ملفات workflow يتطلب صلاحية workflows غير متاحة في جلسة الدفع الحالية)
+
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dev dependencies (jsdom for the DOM e2e)
+        run: npm ci || npm install
+      - name: Syntax + unit + DOM e2e
+        run: npm run ci
