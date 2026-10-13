@@ -7,6 +7,8 @@ const I18N = {
   ar: {
     dir: 'rtl',
 
+    storageBlocked: 'تنبيه: المتصفح يحجب التخزين المحلي — ستحتاج لتسجيل الدخول مجددًا عند كل تحديث للصفحة',
+
     profitToday: 'ربح اليوم', today: 'اليوم',
 
     login: 'تسجيل الدخول', username: 'اسم المستخدم', password: 'كلمة المرور', signIn: 'دخول',
@@ -76,6 +78,8 @@ const I18N = {
 
   en: {
     dir: 'ltr',
+
+    storageBlocked: 'Heads up: this browser blocks local storage — you’ll need to sign in again after each page reload',
 
     profitToday: 'Today’s profit', today: 'Today',
 
@@ -147,6 +151,8 @@ const I18N = {
   fr: {
     dir: 'ltr',
 
+    storageBlocked: 'Attention : ce navigateur bloque le stockage local — reconnectez-vous après chaque rechargement',
+
     profitToday: 'Profit du jour', today: 'Aujourd’hui',
 
     login: 'Connexion', username: 'Identifiant', password: 'Mot de passe', signIn: 'Se connecter',
@@ -217,6 +223,8 @@ const I18N = {
   es: {
     dir: 'ltr',
 
+    storageBlocked: 'Aviso: este navegador bloquea el almacenamiento local — tendrá que entrar de nuevo al recargar',
+
     profitToday: 'Beneficio de hoy', today: 'Hoy',
 
     login: 'Iniciar sesión', username: 'Usuario', password: 'Contraseña', signIn: 'Entrar',
@@ -286,6 +294,8 @@ const I18N = {
 
   tr: {
     dir: 'ltr',
+
+    storageBlocked: 'Uyarı: tarayıcı yerel depolamayı engelliyor — her yenilemede yeniden giriş gerekir',
 
     profitToday: 'Bugünün kârı', today: 'Bugün',
 

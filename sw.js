@@ -1,5 +1,5 @@
 // TUOBA Restaurant OS — service worker (network-first, versioned cache)
-const CACHE = 'tuoba-os-v4';
+const CACHE = 'tuoba-os-v5';
 const ASSETS = [
   './', './index.html', './style.css', './manifest.webmanifest',
   './js/i18n.js', './js/state.js', './js/api.js', './js/ui.js', './js/tabs.js', './js/modules.js', './js/app.js',

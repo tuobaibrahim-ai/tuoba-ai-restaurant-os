@@ -1,12 +1,38 @@
 // ============================================================================
 // TUOBA ERP — API client: bearer-token fetch wrapper + error translation
+// Token lives in memory first (works even when the iframe blocks
+// localStorage), with localStorage as a best-effort persistence layer.
 // ============================================================================
 const TOKEN_KEY = 'tuoba-erp-token';
 const LANG_KEY = 'tuoba-erp-lang';
 
-function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch { return ''; } }
+let memToken = '';
+let storageUsable = null; // null = untested
+
+function probeStorage() {
+  if (storageUsable !== null) return storageUsable;
+  try {
+    const k = '__tuoba_probe__';
+    localStorage.setItem(k, '1');
+    localStorage.removeItem(k);
+    storageUsable = true;
+  } catch {
+    storageUsable = false; // blocked (private mode / partitioned iframe)
+  }
+  return storageUsable;
+}
+
+function getToken() {
+  if (memToken) return memToken;
+  try { memToken = localStorage.getItem(TOKEN_KEY) || ''; } catch { memToken = ''; }
+  return memToken;
+}
 function setToken(token) {
-  try { if (token) localStorage.setItem(TOKEN_KEY, token); else localStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ }
+  memToken = token || '';
+  try {
+    if (token) localStorage.setItem(TOKEN_KEY, token);
+    else localStorage.removeItem(TOKEN_KEY);
+  } catch { /* blocked — memory copy still valid for this page session */ }
 }
 function getSavedLang() { try { return localStorage.getItem(LANG_KEY) || ''; } catch { return ''; } }
 function saveLang(lang) { try { localStorage.setItem(LANG_KEY, lang); } catch { /* ignore */ } }
@@ -32,7 +58,9 @@ async function api(path, method = 'GET', body) {
   } catch {
     throw new ApiError('network', 0);
   }
-  if (res.status === 401) {
+  // A 401 from the login endpoint itself is a normal auth failure, not an
+  // expired session — never re-render the gate in that case.
+  if (res.status === 401 && !path.startsWith('/api/auth/login')) {
     if (_onUnauthorized) _onUnauthorized();
     throw new ApiError('unauthorized', 401);
   }
@@ -42,7 +70,7 @@ async function api(path, method = 'GET', body) {
   return data;
 }
 
-// Map server error codes to localized toast messages.
+// Map server error codes to localized toast/screen messages.
 function apiErrorText(err) {
   const map = {
     wrongCreds: 'wrongCreds', forbidden: 'forbidden', passwordTooShort: 'passwordTooShort',
@@ -63,5 +91,5 @@ function readCachedBootstrap() {
 }
 
 if (typeof module !== 'undefined') {
-  module.exports = { api, ApiError, getToken, setToken };
+  module.exports = { api, ApiError, getToken, setToken, probeStorage };
 }

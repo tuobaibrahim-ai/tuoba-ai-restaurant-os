@@ -13,7 +13,10 @@ async function loadPublicConfig() {
   try {
     const res = await fetch('/api/public/config');
     if (res.ok) publicCfg = await res.json();
-  } catch { /* offline — defaults */ }
+    else publicCfg.offline = true;
+  } catch {
+    publicCfg.offline = true; // shown on the login card
+  }
 }
 
 function showLogin(message) {
@@ -88,11 +91,11 @@ async function enterApp() {
         data = cached;
         data.me = data.me || { name: 'offline', role: 'manager', username: 'offline' };
         toast(t('offlineMode'), 'err');
-      } else { setToken(null); showLogin(t('offlineMode')); return; }
+      } else {
+        throw err;
+      }
     } else {
-      setToken(null);
-      showLogin();
-      return;
+      throw err;
     }
   }
   const preLang = getSavedLang();
@@ -271,15 +274,31 @@ async function boot() {
   await loadPublicConfig();
   applyLangOnly(getSavedLang() || 'ar');
   renderTabLabels();
+  if (!probeStorage()) {
+    // Blocked storage (private mode / sandboxed iframe): the session lives in
+    // memory only — warn once so a reload requiring re-login is understood.
+    publicCfg.storageBlocked = true;
+  }
   if (getToken()) {
-    try { await enterApp(); return; } catch { /* fall through to login */ }
+    try {
+      await enterApp();
+      if (publicCfg.storageBlocked) toast(t('storageBlocked'), 'info');
+      return;
+    } catch {
+      setToken(null); // dead token — fall through to the gate
+    }
   }
   showLogin();
+  if (publicCfg.storageBlocked) toast(t('storageBlocked'), 'info');
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => { /* optional */ });
   }
 }
 
-setUnauthorizedHandler(() => { setToken(null); if (!$('login-root') || $('login-root').hidden) showLogin(t('sessionExpired')); });
+setUnauthorizedHandler(() => {
+  setToken(null);
+  const root = document.getElementById('login-root');
+  if (!root || root.hidden) showLogin(t('sessionExpired'));
+});
 
 boot();
