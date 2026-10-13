@@ -113,3 +113,7 @@ body{margin:0;font-family:'Segoe UI',Tahoma,system-ui,-apple-system,Arial,sans-s
   .sheet-grid{grid-template-columns:repeat(6,1fr)}
   .content{padding:16px}
 }
+
+/* small fixed-width numeric inputs (CSP-safe: no inline styles) */
+.w90{max-width:90px}
+.w80{max-width:80px}

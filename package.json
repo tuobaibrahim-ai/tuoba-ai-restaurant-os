@@ -1,13 +1,18 @@
 {
-  "name": "tuoba-restaurant-os",
-  "version": "2.0.0",
+  "name": "tuoba-restaurant-erp",
+  "version": "3.0.0",
   "private": true,
-  "description": "TUOBA — نظام تشغيل مطاعم متكامل متعدد اللغات (نموذج أولي بدون خدمات خلفية)",
+  "description": "TUOBA ERP — نظام تشغيل مطاعم متعدد المستخدمين واللغات (خادم Node بدون أي اعتماديات خارجية)",
+  "main": "server/index.js",
   "scripts": {
-    "check": "node --check sw.js && node --check js/i18n.js && node --check js/state.js && node --check js/ui.js && node --check js/tabs.js && node --check js/app.js",
+    "start": "node server/index.js",
+    "check": "node --check server/index.js && node --check server/api.js && node --check server/store.js && node --check server/passwords.js && node --check sw.js && node --check js/i18n.js && node --check js/state.js && node --check js/api.js && node --check js/ui.js && node --check js/tabs.js && node --check js/modules.js && node --check js/app.js",
     "test": "node --test tests/*.test.js",
     "test:e2e": "node tests/e2e.dom.js",
     "ci": "npm run check && npm test && npm run test:e2e"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "devDependencies": {
     "jsdom": "^24.1.0"
