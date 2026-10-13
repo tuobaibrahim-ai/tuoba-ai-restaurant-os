@@ -30,6 +30,7 @@ function showLogin(message) {
       <img class="login-logo" src="icons/icon-192.png" alt="" />
       <h1>${esc(publicCfg.company || 'TUOBA')} ERP</h1>
       <p class="muted">${t('appSubtitle')}</p>
+      ${window.__TUOBA_LOCAL ? `<div class="local-badge">${t('localBadge')}</div>` : ''}
       <div class="form-grid login-form">
         <input id="login-user" class="input" autocomplete="username" placeholder="${t('username')}" />
         <input id="login-pass" class="input" type="password" autocomplete="current-password" placeholder="${t('password')}" />
@@ -114,6 +115,7 @@ async function enterApp() {
   render('overview');
   const hash = String(location.hash || '').replace('#', '');
   if (hash && canSee(hash)) render(hash);
+  if (window.__TUOBA_LOCAL) toast(t('localMode'), 'info');
   maybeOfferLegacyImport();
 }
 
@@ -272,6 +274,11 @@ async function boot() {
   wireNav();
   wireDelegation();
   await loadPublicConfig();
+  if (publicCfg.offline) {
+    // No server reachable: run the full ERP locally (same creds & screens).
+    window.__TUOBA_LOCAL = true;
+    try { localLoad(); } catch { /* local.js guarantees init */ }
+  }
   applyLangOnly(getSavedLang() || 'ar');
   renderTabLabels();
   if (!probeStorage()) {

@@ -7,6 +7,9 @@ const I18N = {
   ar: {
     dir: 'rtl',
 
+    localBadge: 'وضع محلي — يعمل بدون خادم',
+    localMode: 'وضع محلي: البيانات تُحفظ على هذا الجهاز فقط',
+
     storageBlocked: 'تنبيه: المتصفح يحجب التخزين المحلي — ستحتاج لتسجيل الدخول مجددًا عند كل تحديث للصفحة',
 
     profitToday: 'ربح اليوم', today: 'اليوم',
@@ -78,6 +81,9 @@ const I18N = {
 
   en: {
     dir: 'ltr',
+
+    localBadge: 'Local mode — running without a server',
+    localMode: 'Local mode: data is saved on this device only',
 
     storageBlocked: 'Heads up: this browser blocks local storage — you’ll need to sign in again after each page reload',
 
@@ -151,6 +157,9 @@ const I18N = {
   fr: {
     dir: 'ltr',
 
+    localBadge: 'Mode local — fonctionne sans serveur',
+    localMode: 'Mode local : données enregistrées sur cet appareil uniquement',
+
     storageBlocked: 'Attention : ce navigateur bloque le stockage local — reconnectez-vous après chaque rechargement',
 
     profitToday: 'Profit du jour', today: 'Aujourd’hui',
@@ -223,6 +232,9 @@ const I18N = {
   es: {
     dir: 'ltr',
 
+    localBadge: 'Modo local — funciona sin servidor',
+    localMode: 'Modo local: los datos se guardan solo en este dispositivo',
+
     storageBlocked: 'Aviso: este navegador bloquea el almacenamiento local — tendrá que entrar de nuevo al recargar',
 
     profitToday: 'Beneficio de hoy', today: 'Hoy',
@@ -294,6 +306,9 @@ const I18N = {
 
   tr: {
     dir: 'ltr',
+
+    localBadge: 'Yerel mod — sunucusuz çalışır',
+    localMode: 'Yerel mod: veriler yalnızca bu cihazda saklanır',
 
     storageBlocked: 'Uyarı: tarayıcı yerel depolamayı engelliyor — her yenilemede yeniden giriş gerekir',
 

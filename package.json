@@ -9,8 +9,9 @@
     "check": "node --check server/index.js && node --check server/api.js && node --check server/store.js && node --check server/passwords.js && node --check sw.js && node --check js/i18n.js && node --check js/state.js && node --check js/api.js && node --check js/ui.js && node --check js/tabs.js && node --check js/modules.js && node --check js/app.js",
     "test": "node --test tests/*.test.js",
     "test:e2e": "node tests/e2e.dom.js",
-    "ci": "npm run check && npm test && npm run test:e2e && npm run test:e2e:blocked",
-    "test:e2e:blocked": "node tests/e2e.blocked-storage.js"
+    "ci": "npm run check && npm test && npm run test:e2e && npm run test:e2e:blocked && npm run test:local",
+    "test:e2e:blocked": "node tests/e2e.blocked-storage.js",
+    "test:local": "node tests/local-mode.js"
   },
   "engines": {
     "node": ">=20"

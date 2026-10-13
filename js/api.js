@@ -45,6 +45,9 @@ class ApiError extends Error {
 }
 
 async function api(path, method = 'GET', body) {
+  // Local fallback engine: when the server is unreachable at boot, the whole
+  // ERP runs in-browser with identical endpoints and response shapes.
+  if (window.__TUOBA_LOCAL) return localApi(path, method, body);
   let res;
   try {
     res = await fetch(path, {
