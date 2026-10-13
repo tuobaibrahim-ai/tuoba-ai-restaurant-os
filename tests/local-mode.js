@@ -75,6 +75,35 @@ function check(name, cond) {
   await sleep(400);
   const err = document.getElementById('login-err').textContent;
   check('local: wrong-creds message correct', err.length > 3);
+  check('local: button label restored after failure', document.getElementById('login-btn').textContent === evl(`t('signIn')`));
+  window.close();
+
+  // ===== Phase 2: server HANGS (accepts the connection, never responds) =====
+  // The fetch timeout must convert the hang into a network error, which then
+  // flips the app into local mode — the login API must still succeed.
+  // (Run against a second window with a hanging fetch stub; the api() call is
+  // made post-load because jsdom drops timers scheduled by script evaluation.)
+  {
+    const html2 = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')
+      .replace(/<script[^>]*src="[^"]*"[^>]*><\/script>/g, '');
+    const dom2 = new JSDOM(html2, { url: 'http://hang.invalid/index.html', runScripts: 'dangerously', pretendToBeVisual: true });
+    const w2 = dom2.window, d2 = w2.document;
+    w2.__TUOBA_FETCH_TIMEOUT = 400; // short timeout for the test
+    w2.fetch = () => new Promise(() => {}); // accepts, never responds
+    for (const f of FILES) {
+      const s = d2.createElement('script');
+      s.textContent = fs.readFileSync(path.join(ROOT, f), 'utf8');
+      d2.body.appendChild(s);
+    }
+    const e2 = c => w2.eval(c);
+    await sleep(150);
+    const cfg = await e2(`api('/api/public/config')`);
+    check('hang: config falls back to local after timeout', cfg && cfg.demoMode === true);
+    check('hang: app flipped to local mode', e2('window.__TUOBA_LOCAL') === true);
+    const login = await e2(`api('/api/auth/login', 'POST', { username: 'manager', password: 'manager123' })`);
+    check('hang: LOGIN succeeds through timeout -> local fallback', !!(login && login.token && login.user && login.user.role === 'manager'));
+    w2.close();
+  }
 
   console.log(failures === 0 ? '\nLOCAL-MODE SUITE: ALL PASS' : `\n${failures} FAILURES`);
   process.exit(failures ? 1 : 0);

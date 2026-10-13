@@ -44,33 +44,57 @@ class ApiError extends Error {
   constructor(code, status) { super(code); this.code = code; this.status = status; }
 }
 
-async function api(path, method = 'GET', body) {
-  // Local fallback engine: when the server is unreachable at boot, the whole
-  // ERP runs in-browser with identical endpoints and response shapes.
-  if (window.__TUOBA_LOCAL) return localApi(path, method, body);
-  let res;
-  try {
-    res = await fetch(path, {
+const FETCH_TIMEOUT = (typeof window !== 'undefined' && Number(window.__TUOBA_FETCH_TIMEOUT)) || 6000;
+
+// Race the request against a hard timeout: a hanging server (proxy accepted
+// the socket but nothing answers) must NEVER leave the UI stuck forever.
+function serverFetch(path, method, body) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new ApiError('network', 0)), FETCH_TIMEOUT);
+    fetch(path, {
       method,
       headers: {
         'content-type': 'application/json',
         ...(getToken() ? { authorization: 'Bearer ' + getToken() } : {})
       },
       body: method !== 'GET' && body !== undefined ? JSON.stringify(body) : undefined
-    });
-  } catch {
-    throw new ApiError('network', 0);
+    }).then(async res => {
+      // A 401 from the login endpoint itself is a normal auth failure, not an
+      // expired session — never re-render the gate in that case.
+      if (res.status === 401 && !path.startsWith('/api/auth/login')) {
+        if (_onUnauthorized) _onUnauthorized();
+        throw new ApiError('unauthorized', 401);
+      }
+      let data = {};
+      try { data = await res.json(); } catch { /* empty body */ }
+      if (!res.ok) throw new ApiError(data.error || 'serverError', res.status);
+      return data;
+    }).then(
+      data => { clearTimeout(timer); resolve(data); },
+      err => {
+        clearTimeout(timer);
+        if (err instanceof ApiError) reject(err);
+        else reject(new ApiError('network', 0));
+      }
+    );
+  });
+}
+
+async function api(path, method = 'GET', body) {
+  // Local fallback engine: when the server is unreachable — at boot, dead,
+  // or hanging past the fetch timeout — the whole ERP runs in-browser with
+  // identical endpoints and response shapes, so the user is never stuck.
+  if (window.__TUOBA_LOCAL) return localApi(path, method, body);
+  try {
+    return await serverFetch(path, method, body);
+  } catch (err) {
+    if (err instanceof ApiError && err.code === 'network' && typeof localApi === 'function') {
+      window.__TUOBA_LOCAL = true;
+      try { toast(t('localMode'), 'info'); } catch { /* ui not ready yet */ }
+      return localApi(path, method, body);
+    }
+    throw err;
   }
-  // A 401 from the login endpoint itself is a normal auth failure, not an
-  // expired session — never re-render the gate in that case.
-  if (res.status === 401 && !path.startsWith('/api/auth/login')) {
-    if (_onUnauthorized) _onUnauthorized();
-    throw new ApiError('unauthorized', 401);
-  }
-  let data = {};
-  try { data = await res.json(); } catch { /* empty body */ }
-  if (!res.ok) throw new ApiError(data.error || 'serverError', res.status);
-  return data;
 }
 
 // Map server error codes to localized toast/screen messages.

@@ -7,6 +7,8 @@ const I18N = {
   ar: {
     dir: 'rtl',
 
+    signingIn: 'جارٍ الدخول…',
+
     localBadge: 'وضع محلي — يعمل بدون خادم',
     localMode: 'وضع محلي: البيانات تُحفظ على هذا الجهاز فقط',
 
@@ -81,6 +83,8 @@ const I18N = {
 
   en: {
     dir: 'ltr',
+
+    signingIn: 'Signing in…',
 
     localBadge: 'Local mode — running without a server',
     localMode: 'Local mode: data is saved on this device only',
@@ -157,6 +161,8 @@ const I18N = {
   fr: {
     dir: 'ltr',
 
+    signingIn: 'Connexion…',
+
     localBadge: 'Mode local — fonctionne sans serveur',
     localMode: 'Mode local : données enregistrées sur cet appareil uniquement',
 
@@ -232,6 +238,8 @@ const I18N = {
   es: {
     dir: 'ltr',
 
+    signingIn: 'Iniciando sesión…',
+
     localBadge: 'Modo local — funciona sin servidor',
     localMode: 'Modo local: los datos se guardan solo en este dispositivo',
 
@@ -306,6 +314,8 @@ const I18N = {
 
   tr: {
     dir: 'ltr',
+
+    signingIn: 'Giriş yapılıyor…',
 
     localBadge: 'Yerel mod — sunucusuz çalışır',
     localMode: 'Yerel mod: veriler yalnızca bu cihazda saklanır',

@@ -10,10 +10,12 @@ const $ = id => document.getElementById(id);
 let publicCfg = { company: 'TUOBA', demoMode: false };
 
 async function loadPublicConfig() {
+  // Route through api(): it races a hard fetch timeout and falls back to the
+  // local engine, so a hanging server can never stall the gate forever.
   try {
-    const res = await fetch('/api/public/config');
-    if (res.ok) publicCfg = await res.json();
-    else publicCfg.offline = true;
+    const cfg = await api('/api/public/config');
+    publicCfg.company = (cfg && cfg.company) || 'TUOBA';
+    publicCfg.demoMode = !!(cfg && cfg.demoMode);
   } catch {
     publicCfg.offline = true; // shown on the login card
   }
@@ -47,7 +49,9 @@ function showLogin(message) {
   $('login-lang').addEventListener('change', e => { applyLangOnly(e.target.value); showLogin(message); });
   const submit = async () => {
     const btn = $('login-btn');
+    if (btn.disabled) return; // guard double submit (click + Enter)
     btn.disabled = true;
+    btn.textContent = t('signingIn');
     try {
       const { token } = await api('/api/auth/login', 'POST', {
         username: $('login-user').value.trim(),
@@ -57,6 +61,7 @@ function showLogin(message) {
       await enterApp();
     } catch (err) {
       btn.disabled = false;
+      btn.textContent = t('signIn');
       const el = $('login-err');
       el.textContent = apiErrorText(err);
       el.hidden = false;
@@ -64,6 +69,7 @@ function showLogin(message) {
   };
   $('login-btn').addEventListener('click', submit);
   $('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+  $('login-user').addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
   $('login-user').focus();
 }
 
@@ -115,7 +121,7 @@ async function enterApp() {
   render('overview');
   const hash = String(location.hash || '').replace('#', '');
   if (hash && canSee(hash)) render(hash);
-  if (window.__TUOBA_LOCAL) toast(t('localMode'), 'info');
+  if (publicCfg.offline) toast(t('localMode'), 'info');
   maybeOfferLegacyImport();
 }
 
